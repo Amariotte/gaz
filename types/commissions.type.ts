@@ -1,5 +1,5 @@
 import { meta } from "./other.type";
-import { detailsTransaction } from "./reglements.type";
+import { detailsTransaction } from "./reglements-clients.type";
 
 export type commission = {
   id: string;
@@ -16,13 +16,9 @@ export type commission = {
 
   nomAgence?: string;
   details?: detailsTransaction[];
-  
 };
-
-	
 
 export type listCommissions = {
   meta?: meta;
   data: commission[];
 };
-

@@ -1,15 +1,17 @@
+import { sharedStyles } from "@/styles/shared.js";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
+
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    StyleSheet,
-    TextInput,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  View,
 } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -56,7 +58,7 @@ export default function LoginScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.gradient}
     >
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={sharedStyles.container}>
         <KeyboardAvoidingView
           style={styles.keyboardContainer}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -174,9 +176,7 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  safeArea: {
-    flex: 1,
-  },
+
   keyboardContainer: {
     flex: 1,
   },

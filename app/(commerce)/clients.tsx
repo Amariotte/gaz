@@ -203,16 +203,6 @@ export default function ClientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 16,
-    paddingHorizontal: 12,
-  },
-  headerWrap: {
-    marginTop: -16,
-    marginHorizontal: -12,
-    marginBottom: 14,
-  },
   searchBar: {
     height: 42,
     borderRadius: 12,

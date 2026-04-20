@@ -9,11 +9,53 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePaginatedCachedResource } from "@/hooks/use-paginated-cached-resource";
 import { getfetchProduits } from "@/services/api-service";
 import { PRODUITS_LIST_CACHE_KEY } from "@/services/cache-service";
-import { formatNumber } from "@/tools/tools";
+import { formatAmount } from "@/tools/tools";
 import { listProduits } from "@/types/produits.type";
 import { useMemo, useState } from "react";
 
 const PRODUCT_TABS = ["Produits", "Categories", "Unites"] as const;
+
+type StockState = {
+  label: string;
+  backgroundColor: string;
+  textColor: string;
+};
+
+const getStockState = (
+  stock: number,
+  stockMini?: number,
+  stockMaxi?: number,
+): StockState => {
+  if (stock <= 0) {
+    return {
+      label: "Rupture",
+      backgroundColor: "#FFE3DF",
+      textColor: "#D63A24",
+    };
+  }
+
+  if (typeof stockMaxi === "number" && stock > stockMaxi) {
+    return {
+      label: "Surstock",
+      backgroundColor: "#FFF1DE",
+      textColor: "#C86A0A",
+    };
+  }
+
+  if (typeof stockMini === "number" && stock <= stockMini) {
+    return {
+      label: "Alerte stock",
+      backgroundColor: "#FFF6D9",
+      textColor: "#946200",
+    };
+  }
+
+  return {
+    label: "Normal",
+    backgroundColor: "#E3F6E8",
+    textColor: "#167A35",
+  };
+};
 
 export default function ProduitsScreen() {
   const scheme = useColorScheme() ?? "light";
@@ -56,7 +98,7 @@ export default function ProduitsScreen() {
   return (
     <ThemedView style={[styles.container, { backgroundColor: pageBackground }]}>
       <View style={styles.headerWrap}>
-        <AppHeaderDrawer title="Products" />
+        <AppHeaderDrawer title="Produits" />
       </View>
 
       <View style={styles.tabsRow}>
@@ -100,7 +142,7 @@ export default function ProduitsScreen() {
 
       <View style={styles.summaryRow}>
         <View style={styles.summaryLabelRow}>
-          <ThemedText style={styles.summaryText}>Total Products</ThemedText>
+          <ThemedText style={styles.summaryText}>Produits</ThemedText>
           <View style={styles.countBadge}>
             <ThemedText style={styles.countBadgeText}>
               {produits?.data?.length ?? 0}
@@ -131,10 +173,13 @@ export default function ProduitsScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       >
-        {produits?.data?.map((item, index) => {
-          const oldPrice =
-            item.prixVenteTTC + Math.round(item.prixVenteTTC * 0.08);
-          const hasDiscount = index % 2 === 1;
+        {produits?.data?.map((item) => {
+          const currentStock = item.stock ?? 0;
+          const stockState = getStockState(
+            currentStock,
+            item.stockMini,
+            item.stockMaxi,
+          );
 
           return (
             <View
@@ -176,6 +221,35 @@ export default function ProduitsScreen() {
                     >
                       {item.designation}
                     </ThemedText>
+                    <View style={styles.productStockRow}>
+                      <ThemedText
+                        style={[styles.alertText, { color: mutedText }]}
+                      >
+                        Stock :
+                      </ThemedText>
+
+                      <ThemedText
+                        type="defaultSemiBold"
+                        style={[styles.productName, { color: mutedText }]}
+                      >
+                        {currentStock}
+                      </ThemedText>
+                      <View
+                        style={[
+                          styles.stockStatePill,
+                          { backgroundColor: stockState.backgroundColor },
+                        ]}
+                      >
+                        <ThemedText
+                          style={[
+                            styles.stockStateText,
+                            { color: stockState.textColor },
+                          ]}
+                        >
+                          {stockState.label}
+                        </ThemedText>
+                      </View>
+                    </View>
                   </View>
                 </View>
 
@@ -214,34 +288,27 @@ export default function ProduitsScreen() {
                 ]}
               >
                 <View style={styles.leftMetaRow}>
-                  <View style={styles.familyPill}>
-                    <ThemedText style={styles.familyText}>
-                      {item.nomfamille}
-                    </ThemedText>
+                  <View style={styles.metaTopRow}>
+                    <View style={styles.familyPill}>
+                      <ThemedText style={styles.familyText}>
+                        {item.nomfamille}
+                      </ThemedText>
+                    </View>
                   </View>
+
                   <ThemedText style={[styles.alertText, { color: mutedText }]}>
-                    Alert Quantity : 10
+                    Stock alerte : {item.stockMini ?? 0} | Stock maximum :{" "}
+                    {item.stockMaxi ?? 0}
                   </ThemedText>
                 </View>
 
                 <View style={styles.priceRow}>
-                  {hasDiscount ? (
-                    <>
-                      <ThemedText style={styles.oldPriceText}>
-                        ${formatNumber(oldPrice)}
-                      </ThemedText>
-                      <ThemedText style={styles.currentPriceDanger}>
-                        ${formatNumber(item.prixVenteTTC)}
-                      </ThemedText>
-                    </>
-                  ) : (
-                    <ThemedText
-                      type="defaultSemiBold"
-                      style={styles.currentPriceText}
-                    >
-                      ${formatNumber(item.prixVenteTTC)}
-                    </ThemedText>
-                  )}
+                  <ThemedText
+                    type="defaultSemiBold"
+                    style={styles.currentPriceText}
+                  >
+                    {formatAmount(item.prixVenteTTC)}
+                  </ThemedText>
                 </View>
               </View>
             </View>
@@ -361,6 +428,17 @@ const styles = StyleSheet.create({
   productInfo: {
     flex: 1,
   },
+  productStockRow: {
+    marginTop: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  productStockText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
   referenceText: {
     color: "#8C74FF",
     fontSize: 10,
@@ -390,9 +468,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   leftMetaRow: {
+    flex: 1,
+    gap: 6,
+  },
+  metaTopRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    flexWrap: "wrap",
   },
   familyPill: {
     backgroundColor: "#FFEAE4",
@@ -407,6 +490,15 @@ const styles = StyleSheet.create({
   },
   alertText: {
     fontSize: 12,
+  },
+  stockStatePill: {
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  stockStateText: {
+    fontSize: 10,
+    fontWeight: "700",
   },
   priceRow: {
     flexDirection: "row",

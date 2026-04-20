@@ -31,7 +31,7 @@ import {
   stat,
 } from "@/types/other.type";
 import { listProduits } from "@/types/produits.type";
-import { listReglements, reglement } from "@/types/reglements.type";
+import { listReglements, reglement } from "@/types/reglements-clients.type";
 import { SoldeResponse } from "@/types/solde.type";
 import { listVentes, vente } from "@/types/ventes.type";
 import { getJsonAuth, postJsonAuth } from "./api-client";
@@ -323,7 +323,7 @@ export async function getfetchOperationById(
   return d;
 }
 
-export async function getfetchReglementById(
+export async function getfetchReglementClientById(
   token: string,
   id: string,
 ): Promise<reglement | null> {
@@ -335,7 +335,26 @@ export async function getfetchReglementById(
   }
 
   const d = await getJsonAuth<reglement>(
-    `${apiConfig.endpoints.reglements}/${id}`,
+    `${apiConfig.endpoints.reglementsClients}/${id}`,
+    token,
+  );
+
+  return d;
+}
+
+export async function getfetchReglementFournisseurById(
+  token: string,
+  id: string,
+): Promise<reglement | null> {
+  if (isModeDemoEnabled()) {
+    return reglementsFakeData.data.filter((reglement) => reglement.id === id)
+      .length > 0
+      ? reglementsFakeData.data.filter((reglement) => reglement.id === id)[0]
+      : null;
+  }
+
+  const d = await getJsonAuth<reglement>(
+    `${apiConfig.endpoints.reglementsFournisseurs}/${id}`,
     token,
   );
 
@@ -472,7 +491,7 @@ export async function getfetchOperations(
   return data;
 }
 
-export async function getfetchReglements(
+export async function getfetchReglementsClients(
   token: string,
 ): Promise<listReglements> {
   if (isModeDemoEnabled()) {
@@ -480,7 +499,7 @@ export async function getfetchReglements(
   }
 
   const data = await getJsonAuth<listReglements>(
-    `${apiConfig.endpoints.reglements}`,
+    `${apiConfig.endpoints.reglementsClients}`,
     token,
   );
   return data;

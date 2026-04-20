@@ -5,22 +5,27 @@ export type Produit = {
   reference: string;
   designation: string;
   nomfamille: string;
+  nomfournisseur?: string;
   prixVenteTTC: number;
+  stock?: number;
+  stockMini?: number;
+  stockMaxi?: number;
   txTva?: number;
   prixVenteHT?: number;
-  detailPackage?: detailPackage[];
+  produitsSite?: produitSite[];
 };
 
-
-export type detailPackage = {
+export type produitSite = {
   id: string;
-  nom: string;
-  qte: number; 
-  puVenteTTC: number;
-  puAchatHT: number;
-  taxe: number;
+  nomSite: string;
+  stock?: number;
+  stockMini?: number;
+  stockMaxi?: number;
+  prixVenteTTC: number;
+  prixVenteHT: number;
+  prixAchatHT: number;
+  txTva: number;
 };
-
 
 export type listProduits = {
   meta?: meta;

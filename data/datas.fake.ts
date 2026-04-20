@@ -7,7 +7,7 @@ import { listOperations, operation } from "@/types/operations.type";
 import { dataChart, meta, stat } from "@/types/other.type";
 import { listProduits } from "@/types/produits.type";
 import { listPromotions } from "@/types/promotions.type";
-import { listReglements, reglement } from "@/types/reglements.type";
+import { listReglements, reglement } from "@/types/reglements-clients.type";
 import { SoldeResponse } from "@/types/solde.type";
 import { AuthResponse, user } from "@/types/user.type";
 import { detailsVente, listVentes } from "@/types/ventes.type";
@@ -46,6 +46,9 @@ export const produitsFakeData: listProduits = {
       reference: "CIM-50-001",
       nomfamille: "Construction",
       prixVenteTTC: 18500,
+      stockMini: 10,
+      stockMaxi: 100,
+      stock: 25,
     },
     {
       id: "prod-002",
@@ -53,6 +56,9 @@ export const produitsFakeData: listProduits = {
       reference: "PEI-5L-002",
       nomfamille: "Peinture",
       prixVenteTTC: 45000,
+      stockMini: 5,
+      stockMaxi: 50,
+      stock: 20,
     },
     {
       id: "prod-003",
@@ -60,6 +66,9 @@ export const produitsFakeData: listProduits = {
       reference: "FER-12-003",
       nomfamille: "Construction",
       prixVenteTTC: 750000,
+      stockMini: 20,
+      stockMaxi: 200,
+      stock: 150,
     },
     {
       id: "prod-004",
@@ -67,6 +76,9 @@ export const produitsFakeData: listProduits = {
       reference: "INT-S-004",
       nomfamille: "Électricité",
       prixVenteTTC: 1500,
+      stockMini: 10,
+      stockMaxi: 100,
+      stock: 30,
     },
     {
       id: "prod-005",
@@ -74,6 +86,9 @@ export const produitsFakeData: listProduits = {
       reference: "PRI-D-005",
       nomfamille: "Électricité",
       prixVenteTTC: 2500,
+      stockMini: 5,
+      stockMaxi: 50,
+      stock: 20,
     },
     {
       id: "prod-006",
@@ -81,6 +96,9 @@ export const produitsFakeData: listProduits = {
       reference: "VER-1L-006",
       nomfamille: "Peinture",
       prixVenteTTC: 30000,
+      stockMini: 5,
+      stockMaxi: 50,
+      stock: 100,
     },
   ],
 };
@@ -273,28 +291,24 @@ export const reglements: reglement[] = [
   {
     id: "reg-001",
     codeReg: "REG-2026-001",
-    nomSousCompte: "Ets Mavungu Construction",
-    nomAgence: "Agence Gombe",
-    nomCompte: "Caisse Principale",
-    operateurSaisie: "M. Ilunga",
+    nomClient: "Ets Mavungu Construction",
+    nomSite: "Agence Gombe",
+    nomUser: "M. Ilunga",
     dateReg: new Date("2026-03-17"),
     montantReg: 150000,
     refReg: "REF-REG-001",
     nomModePaiement: "Espèces",
-    statusEncaisse: "Encaissé",
   },
   {
     id: "reg-002",
     codeReg: "REG-2026-002",
-    nomSousCompte: "Société Lumière Services",
-    nomAgence: "Agence Limete",
-    nomCompte: "Banque BCDC",
-    operateurSaisie: "Mme Kanku",
+    nomClient: "Société Lumière Services",
+    nomSite: "Agence Limete",
+    nomUser: "Mme Kanku",
     dateReg: new Date("2026-03-16"),
     montantReg: 89000,
     refReg: "REF-REG-002",
     nomModePaiement: "Virement",
-    statusEncaisse: "Non encaissé",
   },
 ];
 
