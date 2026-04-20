@@ -17,6 +17,7 @@ type HeaderVariant = "surface" | "primary";
 
 type AppRoute =
   | "/"
+  | "/profile"
   | "/produits"
   | "/ventes"
   | "/proformas"
@@ -247,9 +248,12 @@ export default function AppHeaderDrawer({
           <Pressable style={[styles.iconButton, { backgroundColor: buttonBg }]}>
             <MaterialIcons name="notifications" size={19} color={iconColor} />
           </Pressable>
-          <View style={styles.avatar}>
+          <Pressable
+            onPress={() => router.push("/profile")}
+            style={styles.avatar}
+          >
             <ThemedText style={styles.avatarText}>AG</ThemedText>
-          </View>
+          </Pressable>
         </View>
       </View>
 

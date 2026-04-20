@@ -68,7 +68,10 @@ export default function SalesListScreen() {
         </View>
 
         <View style={styles.summaryActions}>
-          <Pressable style={styles.primaryAction}>
+          <Pressable
+            onPress={() => router.push("/vente-saisie")}
+            style={styles.primaryAction}
+          >
             <MaterialIcons name="add" size={18} color="#FFFFFF" />
           </Pressable>
           <Pressable

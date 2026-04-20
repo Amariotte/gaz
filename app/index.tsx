@@ -18,7 +18,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function LoginScreen() {
   const { signIn, userToken, isLoading } = useAuthContext();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [hidePassword, setHidePassword] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -31,8 +31,8 @@ export default function LoginScreen() {
   }, [isLoading, userToken]);
 
   const handleSignIn = async () => {
-    if (!email.trim() || !password.trim()) {
-      setError("Veuillez remplir votre email et mot de passe.");
+    if (!username.trim() || !password.trim()) {
+      setError("Veuillez remplir votre nom d'utilisateur et mot de passe.");
       return;
     }
 
@@ -40,7 +40,7 @@ export default function LoginScreen() {
     setSubmitting(true);
 
     try {
-      await signIn(email.trim(), password);
+      await signIn(username.trim(), password);
       router.replace("/(tabs)");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Connexion impossible");
@@ -74,35 +74,41 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.formCard}>
-            <ThemedText style={styles.welcomeTitle}>Welcome Back</ThemedText>
+            <ThemedText style={styles.welcomeTitle}>Bienvenue </ThemedText>
             <ThemedText style={styles.welcomeSubtitle}>
-              Login to access your account
+              Connectez-vous pour accéder à votre compte
             </ThemedText>
 
             <View style={styles.fieldBlock}>
-              <ThemedText style={styles.fieldLabel}>Email</ThemedText>
+              <ThemedText style={styles.fieldLabel}>
+                Nom d'utilisateur
+              </ThemedText>
               <View style={styles.inputWrap}>
                 <TextInput
-                  value={email}
-                  onChangeText={setEmail}
+                  value={username}
+                  onChangeText={setUsername}
                   autoCapitalize="none"
-                  keyboardType="email-address"
-                  placeholder="Email Address"
+                  keyboardType="default"
+                  placeholder="Nom d'utilisateur"
                   placeholderTextColor="#B1B5C8"
                   style={styles.input}
                 />
-                <MaterialIcons name="mail-outline" size={16} color="#B1B5C8" />
+                <MaterialIcons
+                  name="person-outline"
+                  size={16}
+                  color="#B1B5C8"
+                />
               </View>
             </View>
 
             <View style={styles.fieldBlock}>
-              <ThemedText style={styles.fieldLabel}>Password</ThemedText>
+              <ThemedText style={styles.fieldLabel}>Mot de passe</ThemedText>
               <View style={styles.inputWrap}>
                 <TextInput
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={hidePassword}
-                  placeholder="Password"
+                  placeholder="Mot de passe"
                   placeholderTextColor="#B1B5C8"
                   style={styles.input}
                 />
@@ -118,7 +124,7 @@ export default function LoginScreen() {
 
             <Pressable style={styles.forgotWrap}>
               <ThemedText style={styles.forgotText}>
-                Forgot Password?
+                Mot de passe oublié ?
               </ThemedText>
             </Pressable>
 
@@ -138,7 +144,9 @@ export default function LoginScreen() {
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <View style={styles.signInContent}>
-                  <ThemedText style={styles.signInText}>Sign In</ThemedText>
+                  <ThemedText style={styles.signInText}>
+                    Se connecter
+                  </ThemedText>
                   <MaterialIcons
                     name="arrow-forward"
                     size={15}
@@ -149,7 +157,7 @@ export default function LoginScreen() {
             </Pressable>
 
             <Pressable style={styles.backWrap}>
-              <ThemedText style={styles.backText}>Back</ThemedText>
+              <ThemedText style={styles.backText}>Retour</ThemedText>
             </Pressable>
           </View>
         </KeyboardAvoidingView>
