@@ -1,17 +1,12 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
-import {
-  Animated,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import AppHeaderDrawer from "@/components/app-header-drawer";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import COLORS from "@/styles/colors";
 
 type Tile = {
   id: string;
@@ -72,75 +67,28 @@ const CUSTOMERS = [
   { id: "c3", name: "Superette Amani", amount: "147 000 FCFA" },
 ];
 
-const DRAWER_ITEMS = [
-  { id: "dashboard", label: "Tableau de bord", icon: "dashboard" as const },
-  { id: "ventes", label: "Ventes", icon: "point-of-sale" as const },
-  {
-    id: "reception",
-    label: "Reception de gaz",
-    icon: "local-shipping" as const,
-  },
-  { id: "clients", label: "Clients", icon: "groups" as const },
-  { id: "fournisseurs", label: "Fournisseurs", icon: "storefront" as const },
-  { id: "stats", label: "Statistiques", icon: "bar-chart" as const },
-  { id: "params", label: "Parametres", icon: "settings" as const },
-];
-
-const DRAWER_WIDTH = 280;
-
 export default function HomeScreen() {
   const scheme = useColorScheme() ?? "light";
   const isDark = scheme === "dark";
-  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const drawerAnimation = useRef(new Animated.Value(0)).current;
 
   const surface = isDark ? "#1A1A22" : "#FFFFFF";
   const screenBg = isDark ? "#4E2ED8" : "#6B3CFF";
   const textMute = isDark ? "#B7B8C7" : "#61637A";
   const innerBorder = isDark ? "#363A4C" : "#E7EAF5";
 
-  const openDrawer = () => {
-    setIsDrawerVisible(true);
-    Animated.timing(drawerAnimation, {
-      toValue: 1,
-      duration: 220,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const closeDrawer = () => {
-    Animated.timing(drawerAnimation, {
-      toValue: 0,
-      duration: 180,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) {
-        setIsDrawerVisible(false);
-      }
-    });
-  };
-
-  const drawerTranslateX = drawerAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-DRAWER_WIDTH, 0],
-  });
-
-  const overlayOpacity = drawerAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-
   const handleQuickTilePress = (tileId: string) => {
     if (tileId === "vente") {
       router.push("/ventes");
+      return;
     }
-  };
 
-  const handleDrawerItemPress = (itemId: string) => {
-    closeDrawer();
+    if (tileId === "clients") {
+      router.push("/clients");
+      return;
+    }
 
-    if (itemId === "ventes") {
-      router.push("/ventes");
+    if (tileId === "fournisseurs") {
+      router.push("/fournisseurs");
     }
   };
 
@@ -150,25 +98,9 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={[
-            styles.hero,
-            { backgroundColor: isDark ? "#4E2ED8" : "#6B3CFF" },
-          ]}
-        >
-          <View style={styles.heroTop}>
-            <Pressable onPress={openDrawer} style={styles.heroBadge}>
-              <MaterialIcons name="grid-view" size={18} color="#FFFFFF" />
-            </Pressable>
-            <ThemedText style={styles.heroTitle}>Dashboard</ThemedText>
-            <View style={styles.heroActions}>
-              <View style={styles.heroIconRound}>
-                <MaterialIcons name="notifications" size={16} color="#FFFFFF" />
-              </View>
-              <View style={styles.heroAvatar}>
-                <ThemedText style={styles.heroAvatarText}>AG</ThemedText>
-              </View>
-            </View>
+        <View style={[styles.hero, { backgroundColor: COLORS.primaryColor }]}>
+          <View style={styles.headerEdge}>
+            <AppHeaderDrawer title="Dashboard" variant="primary" />
           </View>
 
           <ThemedText style={styles.heroHint}>Total ventes du mois</ThemedText>
@@ -376,92 +308,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {isDrawerVisible ? (
-        <View style={styles.drawerLayer} pointerEvents="box-none">
-          <Pressable style={StyleSheet.absoluteFill} onPress={closeDrawer}>
-            <Animated.View
-              style={[styles.drawerOverlay, { opacity: overlayOpacity }]}
-            />
-          </Pressable>
-
-          <Animated.View
-            style={[
-              styles.drawer,
-              {
-                backgroundColor: isDark ? "#181926" : "#FFFFFF",
-                transform: [{ translateX: drawerTranslateX }],
-              },
-            ]}
-          >
-            <View style={styles.drawerHeader}>
-              <View style={styles.drawerBrand}>
-                <View
-                  style={[
-                    styles.drawerLogo,
-                    { backgroundColor: isDark ? "#2D2F4D" : "#EEF0FF" },
-                  ]}
-                >
-                  <MaterialIcons
-                    name="local-fire-department"
-                    size={18}
-                    color="#6B3CFF"
-                  />
-                </View>
-                <View>
-                  <ThemedText style={styles.drawerTitle}>eGaz</ThemedText>
-                  <ThemedText
-                    style={[styles.drawerSubtitle, { color: textMute }]}
-                  >
-                    Gestion commerciale
-                  </ThemedText>
-                </View>
-              </View>
-
-              <Pressable onPress={closeDrawer} style={styles.drawerCloseButton}>
-                <MaterialIcons
-                  name="close"
-                  size={18}
-                  color={isDark ? "#FFFFFF" : "#1E2238"}
-                />
-              </Pressable>
-            </View>
-
-            <View style={styles.drawerDivider} />
-
-            <View style={styles.drawerMenu}>
-              {DRAWER_ITEMS.map((item) => (
-                <Pressable
-                  key={item.id}
-                  onPress={() => handleDrawerItemPress(item.id)}
-                  style={styles.drawerItem}
-                >
-                  <View
-                    style={[
-                      styles.drawerItemIcon,
-                      { backgroundColor: isDark ? "#252842" : "#F3F4FB" },
-                    ]}
-                  >
-                    <MaterialIcons
-                      name={item.icon}
-                      size={18}
-                      color={isDark ? "#D9DBFF" : "#4D4F6E"}
-                    />
-                  </View>
-                  <ThemedText style={styles.drawerItemLabel}>
-                    {item.label}
-                  </ThemedText>
-                  <MaterialIcons
-                    name="chevron-right"
-                    size={18}
-                    color={isDark ? "#8F94C1" : "#A1A5C8"}
-                  />
-                </Pressable>
-              ))}
-            </View>
-          </Animated.View>
-        </View>
-      ) : null}
     </ThemedView>
   );
 }
@@ -482,6 +328,10 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 14,
   },
+  headerEdge: {
+    marginTop: -16,
+    marginHorizontal: -14,
+  },
   bottomSection: {
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
@@ -489,138 +339,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 24,
     gap: 12,
-  },
-  heroTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  heroBadge: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.22)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  drawerLayer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 20,
-    elevation: 20,
-  },
-  drawerOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(10, 11, 22, 0.38)",
-  },
-  drawer: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: DRAWER_WIDTH,
-    paddingTop: 54,
-    paddingHorizontal: 16,
-    shadowColor: "#000000",
-    shadowOffset: { width: 8, height: 0 },
-    shadowOpacity: 0.18,
-    shadowRadius: 22,
-    elevation: 14,
-  },
-  drawerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  drawerBrand: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  drawerLogo: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  drawerTitle: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: "800",
-  },
-  drawerSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  drawerCloseButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(107,60,255,0.12)",
-  },
-  drawerDivider: {
-    height: 1,
-    backgroundColor: "rgba(125,130,170,0.18)",
-    marginTop: 18,
-    marginBottom: 14,
-  },
-  drawerMenu: {
-    gap: 6,
-  },
-  drawerItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-  },
-  drawerItemIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  drawerItemLabel: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  heroTitle: {
-    color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "700",
-    lineHeight: 22,
-  },
-  heroActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  heroIconRound: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "rgba(255,255,255,0.22)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  heroAvatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#FFB357",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  heroAvatarText: {
-    color: "#2A1E12",
-    fontSize: 11,
-    fontWeight: "800",
   },
   heroHint: {
     color: "#CFC4FF",

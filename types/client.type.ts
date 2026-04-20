@@ -7,6 +7,7 @@ export type client = {
   email: string;
   tel: string;
   adresse: string;
+  solde: number;
   statut: string;
 };
 

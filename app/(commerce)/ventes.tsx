@@ -2,6 +2,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import AppHeaderDrawer from "@/components/app-header-drawer";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAuthContext } from "@/hooks/auth-context";
@@ -32,16 +33,10 @@ export default function SalesListScreen() {
   );
 
   const { userToken } = useAuthContext();
-  const {
-    data: ventes,
-    isLoading,
-    isRefreshing,
-    isLoadingMore,
-    isError,
-    refresh: handleRefresh,
-    loadMore,
-    hasNextPage,
-  } = usePaginatedCachedResource<listVentes["data"][number], listVentes>({
+  const { data: ventes } = usePaginatedCachedResource<
+    listVentes["data"][number],
+    listVentes
+  >({
     cacheKey: VENTES_LIST_CACHE_KEY,
     initialData: initialVentes,
     enabled: Boolean(userToken),
@@ -58,31 +53,8 @@ export default function SalesListScreen() {
 
   return (
     <ThemedView style={[styles.container, { backgroundColor: pageBackground }]}>
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          style={[styles.iconButton, { backgroundColor: cardBackground }]}
-        >
-          <MaterialIcons
-            name="arrow-back"
-            size={20}
-            color={isDark ? "#FFFFFF" : "#282B3D"}
-          />
-        </Pressable>
-
-        <ThemedText type="subtitle" style={styles.headerTitle}>
-          Liste des ventes
-        </ThemedText>
-
-        <Pressable
-          style={[styles.iconButton, { backgroundColor: cardBackground }]}
-        >
-          <MaterialIcons
-            name="search"
-            size={20}
-            color={isDark ? "#FFFFFF" : "#282B3D"}
-          />
-        </Pressable>
+      <View style={styles.headerWrap}>
+        <AppHeaderDrawer title="Liste des ventes" />
       </View>
 
       <View style={styles.summaryRow}>
@@ -161,6 +133,18 @@ export default function SalesListScreen() {
 
               <View style={styles.cardActions}>
                 <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/vente-details",
+                      params: {
+                        id: String(sale.id),
+                        codeVente: sale.codeVente,
+                        nomClient: sale.nomClient,
+                        dateVente: String(sale.dateVente),
+                        totalNetPayer: String(sale.totalNetPayer ?? "0"),
+                      },
+                    })
+                  }
                   style={[
                     styles.smallIconButton,
                     { backgroundColor: softBlock },
@@ -237,23 +221,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 16,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginBottom: 18,
-  },
-  iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    fontSize: 19,
-    lineHeight: 24,
+  headerWrap: {
+    marginTop: -16,
+    marginBottom: 10,
   },
   summaryRow: {
     flexDirection: "row",

@@ -363,6 +363,7 @@ export const clients: client[] = [
     email: "email@example.com",
     tel: "0123456789",
     adresse: "Adresse 1",
+    solde: 150000,
     statut: "Actif",
   },
   {
@@ -372,11 +373,13 @@ export const clients: client[] = [
     email: "jean.dupont@example.com",
     tel: "0987654321",
     adresse: "Adresse 2",
+    solde: 0,
     statut: "Inactif",
   },
   {
     id: "reg-003",
     nom: "Alice Martin",
+    solde: 50000,
     code: "CODE-003",
     email: "alice.martin@example.com",
     tel: "0123456789",
